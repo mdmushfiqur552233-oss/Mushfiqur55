@@ -1,0 +1,722 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Watermelon Cash 🍉</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* --- PREMIUM LIGHT THEME VARIABLES --- */
+        :root {
+            --bg-main: #F2F6F9;
+            --card-bg: #FFFFFF;
+            --primary: #FF4757;
+            --primary-dark: #e8414f;
+            --secondary: #2ED573;
+            --text-main: #2F3542;
+            --text-sub: #747D8C;
+            --shadow: 0 10px 30px -5px rgba(255, 71, 87, 0.15);
+            --shadow-card: 0 8px 20px rgba(0,0,0,0.05);
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.5);
+        }
+
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            font-family: 'DM Sans', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            user-select: none; -webkit-user-select: none;
+        }
+        
+        body { 
+            background-color: var(--bg-main);
+            color: var(--text-main); 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            padding-bottom: 90px;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(255, 71, 87, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(46, 213, 115, 0.05) 0%, transparent 40%);
+        }
+
+        /* --- 🍉 WATERMELON LOADER ANIMATION --- */
+        #loading-screen { 
+            position: fixed; inset: 0; background: #fff; z-index: 9999; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            transition: opacity 0.5s ease; overflow: hidden;
+        }
+
+        .knife {
+            position: absolute; top: -150px; left: 50%; transform: translateX(-50%);
+            font-size: 80px; color: #dfe4ea; text-shadow: 2px 2px 0px #ced6e0;
+            z-index: 10;
+        }
+        .knife i { transform: rotate(135deg); color: #747d8c; }
+
+        .melon-wrapper {
+            position: relative; width: 120px; height: 120px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        
+        .melon-half {
+            width: 60px; height: 120px;
+            background: var(--secondary);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.1s;
+        }
+        .half-left { border-radius: 60px 0 0 60px; border-right: 1px solid #1e8449; }
+        .half-left::after {
+            content: ''; position: absolute; top: 5px; left: 5px; right: 0; bottom: 5px;
+            background: var(--primary); border-radius: 50px 0 0 50px;
+        }
+        .half-right { border-radius: 0 60px 60px 0; border-left: 1px solid #1e8449; }
+        .half-right::after {
+            content: ''; position: absolute; top: 5px; left: 0; right: 5px; bottom: 5px;
+            background: var(--primary); border-radius: 0 50px 50px 0;
+        }
+
+        .animate-knife-drop { animation: knifeDrop 0.6s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards; }
+        .animate-slow-cut { animation: slowCut 0.8s ease-out forwards; }
+        .animate-split-left { animation: splitLeft 0.8s ease-out forwards; }
+        .animate-split-right { animation: splitRight 0.8s ease-out forwards; }
+
+        @keyframes knifeDrop {
+            0% { top: -150px; opacity: 1; }
+            70% { top: 35%; }
+            100% { top: 42%; }
+        }
+        @keyframes slowCut {
+            0% { top: 42%; } 
+            100% { top: 60%; opacity: 0; }
+        }
+        @keyframes splitLeft {
+            0% { transform: translateX(0) rotate(0); }
+            100% { transform: translateX(-60px) rotate(-25deg); opacity: 0; }
+        }
+        @keyframes splitRight {
+            0% { transform: translateX(0) rotate(0); }
+            100% { transform: translateX(60px) rotate(25deg); opacity: 0; }
+        }
+
+        #main-app { display: none; max-width: 500px; margin: 0 auto; animation: fadeUp 0.8s ease; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .header { padding: 25px 25px 10px; display: flex; justify-content: space-between; align-items: center; }
+        .user-profile { display: flex; align-items: center; gap: 15px; }
+        .avatar-wrap { width: 55px; height: 55px; position: relative; }
+        .avatar-img { width: 100%; height: 100%; border-radius: 18px; object-fit: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .user-details h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--text-main); line-height: 1.2; }
+        .user-details span { font-size: 12px; color: var(--text-sub); }
+        .notif-btn { background: #fff; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-card); color: var(--primary); font-size: 18px; }
+
+        .card-box {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 20px;
+            margin: 15px 25px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, var(--primary), #FF6B81);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px -10px rgba(255, 71, 87, 0.4);
+        }
+        .balance-card::before { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        .balance-card::after { content: ''; position: absolute; bottom: -30px; left: -10px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        
+        .bal-label { font-size: 13px; font-weight: 500; opacity: 0.9; letter-spacing: 1px; text-transform: uppercase; }
+        .bal-amount { font-family: 'Fredoka', sans-serif; font-size: 42px; font-weight: 600; margin: 5px 0 15px; }
+        
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .act-btn {
+            background: rgba(255,255,255,0.2); border: none; padding: 12px; border-radius: 14px;
+            color: white; font-size: 13px; font-weight: 600; backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+        }
+        .act-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.3); }
+
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 25px; }
+        .stat-card { background: #fff; padding: 15px; border-radius: 20px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .stat-icon { width: 40px; height: 40px; border-radius: 50%; background: #F2F6F9; color: var(--secondary); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; font-size: 18px; }
+        .stat-val { font-weight: 700; font-size: 18px; color: var(--text-main); font-family: 'Fredoka', sans-serif; }
+        .stat-lbl { font-size: 11px; color: var(--text-sub); }
+
+        .btn-primary {
+            background: var(--primary); color: white; border: none; width: 100%; padding: 16px;
+            border-radius: 16px; font-weight: 700; font-size: 15px; box-shadow: 0 8px 20px -5px rgba(255, 71, 87, 0.4);
+            cursor: pointer; transition: 0.2s;
+        }
+        .btn-primary:active { transform: scale(0.98); box-shadow: none; }
+
+        .section-title { padding: 25px 25px 10px; font-size: 16px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        .section-title i { color: var(--secondary); }
+        
+        .task-card {
+            background: #fff; margin: 0 25px 15px; padding: 15px; border-radius: 18px;
+            display: flex; align-items: center; gap: 15px; box-shadow: var(--shadow-card);
+            transition: 0.2s;
+        }
+        .task-card:active { transform: scale(0.98); }
+        .task-img { width: 45px; height: 45px; object-fit: contain; }
+        .task-info { flex: 1; }
+        .task-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+        .task-reward { color: var(--secondary); font-weight: 700; font-size: 13px; background: rgba(46, 213, 115, 0.1); display: inline-block; padding: 2px 8px; border-radius: 6px; }
+        .btn-go { background: var(--text-main); color: white; border: none; width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+
+        .input-group { margin-bottom: 15px; }
+        .input-label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 8px; font-weight: 600; margin-left: 5px; }
+        .custom-input {
+            width: 100%; background: #F7F9FC; border: none; padding: 18px; border-radius: 16px;
+            font-size: 15px; color: var(--text-main); font-weight: 500; outline: none;
+        }
+        .custom-input:focus { background: #fff; box-shadow: 0 0 0 2px var(--primary); }
+
+        .podium-wrap { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 20px; }
+        .podium-col { text-align: center; }
+        .podium-avt { width: 50px; height: 50px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: -10px; position: relative; z-index: 2; object-fit: cover; }
+        .podium-bar { border-radius: 15px 15px 0 0; padding-top: 15px; width: 80px; color: white; font-weight: 600; font-size: 20px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 10px; }
+        
+        .rank-1 .podium-avt { width: 65px; height: 65px; border-color: #FFD700; }
+        .rank-1 .podium-bar { height: 140px; background: #FFD700; box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3); font-size: 30px; }
+        .rank-2 .podium-bar { height: 100px; background: #bdc3c7; }
+        .rank-3 .podium-bar { height: 80px; background: #EBA674; }
+        
+        .p-user-name { font-size: 11px; font-weight: 600; margin-top: 5px; color: var(--text-main); max-width: 80px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+        .navbar {
+            position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 460px; margin: 0 auto;
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+            border-radius: 25px; box-shadow: 0 10px 40px -5px rgba(0,0,0,0.15);
+            display: flex; justify-content: space-around; padding: 15px; z-index: 100;
+        }
+        .nav-icon { font-size: 22px; color: #b2bec3; transition: 0.3s; position: relative; }
+        .nav-icon.active { color: var(--primary); transform: translateY(-3px); }
+        .nav-icon.active::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; background: var(--primary); border-radius: 50%; }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: white; width: 85%; max-width: 340px; border-radius: 25px; padding: 30px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .page { display: none; padding-bottom: 20px; }
+        .page.active { display: block; }
+        .text-sec { color: var(--secondary); }
+        #security-overlay { display: none; position: fixed; inset: 0; background: #fff; z-index: 20000; flex-direction: column; justify-content: center; align-items: center; }
+    </style>
+<link rel="me" href="https://www.blogger.com/profile/05574538089521115228">
+<meta name="google-adsense-platform-account" content="ca-host-pub-1556223355139109">
+<meta name="google-adsense-platform-domain" content="blogspot.com">
+</head>
+<body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
+
+    <div id="monetag-script-container"></div>
+    <div id="auto-ad-script-container"></div>
+
+    <div id="security-overlay">
+        <i class="fas fa-shield-cat" style="font-size: 60px; color: var(--primary); margin-bottom: 20px;"></i>
+        <h2 style="color: var(--text-main);">Security Alert</h2>
+        <p style="color: var(--text-sub);">Suspicious activity detected.</p>
+    </div>
+
+    <div id="loading-screen">
+        <div class="knife" id="loader-knife"><i class="fas fa-utensils"></i></div>
+        <div class="melon-wrapper">
+            <div class="melon-half half-left" id="m-left"></div>
+            <div class="melon-half half-right" id="m-right"></div>
+        </div>
+        <div style="position: absolute; bottom: 50px; color: #a4b0be; font-size: 12px; font-weight: 500;">SLICING DATA...</div>
+    </div>
+
+    <div id="main-app">
+        <div class="header">
+            <div class="user-profile">
+                <div class="avatar-wrap"><img id="u-photo" src="" class="avatar-img"></div>
+                <div class="user-details"><h3 id="u-name">Guest</h3><span id="u-id">ID: ...</span></div>
+            </div>
+            <div class="notif-btn" onclick="openSupportModal()"><i class="far fa-bell"></i></div>
+        </div>
+
+        <div id="home" class="page active">
+            <div class="card-box balance-card">
+                <div class="bal-label">Current Balance</div>
+                <div class="bal-amount"><span class="cur-sym">৳</span> <span id="balance">0.00</span></div>
+                <div style="font-size: 13px; background: rgba(255,255,255,0.25); display: inline-block; padding: 5px 15px; border-radius: 20px;">+<span id="earn-24h">0.00</span> Today</div>
+                <div class="action-grid">
+                    <button class="act-btn" onclick="nav('wallet', document.querySelectorAll('.nav-icon')[3])"><i class="fas fa-wallet"></i> Withdraw</button>
+                    <button class="act-btn" onclick="openBotChat()"><i class="fab fa-telegram-plane"></i> Telegram</button>
+                </div>
+            </div>
+            <div class="stats-row">
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-val" id="ref-count">0</div><div class="stat-lbl">Referrals</div></div>
+                <div class="stat-card"><div class="stat-icon" style="color: var(--primary);"><i class="fas fa-coins"></i></div><div class="stat-val" id="total-earn">0.00</div><div class="stat-lbl">Total Earned</div></div>
+            </div>
+            <div class="section-title"><i class="fas fa-gift"></i> Invite &amp; Earn</div>
+            <div class="card-box" style="text-align: center;">
+                <img src="https://cdn-icons-png.flaticon.com/512/3893/3893067.png" width="60" style="margin-bottom: 10px;">
+                <h3 style="font-size: 16px; margin-bottom: 5px; color: var(--text-main);">Refer a Friend</h3>
+                <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 15px;">Get <span class="text-sec" id="ref-bonus-display">...</span> for every invite!</p>
+                <div style="background: #F7F9FC; padding: 10px; border-radius: 14px; display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+                    <input type="text" id="ref-link" readonly style="background: transparent; border: none; width: 100%; color: var(--text-sub); font-size: 12px;" value="...">
+                    <i class="far fa-copy" onclick="copyRef()" style="color: var(--primary); cursor: pointer; padding: 5px;"></i>
+                </div>
+                <button class="btn-primary" onclick="shareRef()">INVITE NOW</button>
+            </div>
+        </div>
+
+        <div id="earn" class="page">
+            <div class="card-box" style="background: #FFF0F1; border: 1px solid rgba(255, 71, 87, 0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div><h3 style="color: var(--primary); font-size: 18px;">Watch Video</h3><p style="font-size: 12px; color: var(--text-sub);">Earn real cash by watching ads</p></div>
+                    <div style="background: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(255, 71, 87, 0.2);"><i class="fas fa-play" style="color: var(--primary); margin-left: 3px;"></i></div>
+                </div>
+                <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div><div style="font-size: 24px; font-weight: 700; font-family: 'Fredoka', sans-serif; color: var(--text-main);" id="ad-reward-txt">+0.00</div><div style="font-size: 11px; color: var(--text-sub);">Per View</div></div>
+                    <div style="text-align: right;"><div style="font-size: 11px; color: var(--text-sub); margin-bottom: 5px;">Daily Limit</div><div style="font-weight: 700; color: var(--text-main);" id="ad-limit-count">0/0</div></div>
+                </div>
+                <button class="btn-primary" style="margin-top: 15px;" id="ad-btn-main" onclick="watchAd()">START WATCHING</button>
+            </div>
+            <div class="section-title"><i class="fas fa-tasks"></i> Daily Tasks</div>
+            <div id="daily-task-container"><p style="text-align: center; color: #b2bec3; font-size: 13px;">Loading tasks...</p></div>
+            <div class="section-title"><i class="fas fa-bolt"></i> One-Time</div>
+            <div id="onetime-task-container"></div>
+            <div style="height: 100px;"></div>
+        </div>
+
+        <div id="leaderboard" class="page">
+            <div class="section-title" style="justify-content: center; font-size: 18px;">Top Leaders 🏆</div>
+            <div id="podium-area" class="podium-wrap"></div>
+            <div class="card-box" style="padding: 10px;"><div id="list-area"><p style="text-align: center; padding: 20px; color: #b2bec3;">Loading list...</p></div></div>
+            <div style="height: 100px;"></div>
+        </div>
+
+        <div id="wallet" class="page">
+            <div style="padding: 25px;">
+                <h2 style="color: var(--text-main); font-family: 'Fredoka', sans-serif;">Withdraw</h2>
+                <p style="color: var(--text-sub); font-size: 13px; margin-bottom: 25px;">Transfer your earnings securely.</p>
+                <div id="pay-channel-btn-container" style="display:none; margin-bottom: 20px;">
+                    <div onclick="openLink('proof')" style="background: #F0F2F5; color: var(--primary); padding: 12px; border-radius: 12px; text-align: center; font-weight: 600; cursor: pointer; border: 1px dashed var(--primary);"><i class="fab fa-telegram-plane"></i> Join Proof Channel</div>
+                </div>
+                <div id="pay-channel-notice" style="display:none; background: #FFF9C4; color: #FBC02D; padding: 10px; border-radius: 10px; font-size: 12px; text-align: center; margin-bottom: 20px; border: 1px solid #FFF176;"></div>
+                <div class="input-group"><label class="input-label">Payment Method</label><select id="w-method" class="custom-input"><option value="">Select...</option></select></div>
+                <div class="input-group"><label class="input-label">Account Number</label><input type="number" id="w-number" class="custom-input" placeholder="017xxxxxxxx"></div>
+                <div class="input-group"><label class="input-label">Amount (Min: <span id="min-w-txt">100</span>)</label><input type="number" id="w-amount" class="custom-input" placeholder="Amount"></div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-sub); margin-bottom: 25px; padding: 0 5px;">
+                    <span>Max Limit: <span id="max-w-txt">5000</span></span><span class="text-sec">Ref Need: <span id="min-ref-txt">0</span></span>
+                </div>
+                <button class="btn-primary" onclick="submitWithdraw()">CONFIRM WITHDRAW</button>
+                <h3 style="margin-top: 30px; font-size: 16px; margin-bottom: 15px;">Recent Transactions</h3>
+                <div id="history-list"></div>
+            </div>
+            <div style="height: 80px;"></div>
+        </div>
+
+        <div class="navbar">
+            <div class="nav-icon active" onclick="nav('home', this)"><i class="fas fa-home"></i></div>
+            <div class="nav-icon" onclick="nav('earn', this)"><i class="fas fa-play-circle"></i></div>
+            <div class="nav-icon" onclick="nav('leaderboard', this)"><i class="fas fa-chart-bar"></i></div>
+            <div class="nav-icon" onclick="nav('wallet', this)"><i class="fas fa-wallet"></i></div>
+        </div>
+
+        <div id="noticeModal" class="modal">
+            <div class="modal-content">
+                <img src="https://cdn-icons-png.flaticon.com/512/3239/3239952.png" width="60" style="margin-bottom: 15px;">
+                <h3 style="margin-bottom: 10px; color: var(--text-main);">Notice</h3>
+                <p id="notice-text" style="color: var(--text-sub); font-size: 13px; line-height: 1.5; margin-bottom: 20px;">...</p>
+                <button class="btn-primary" onclick="document.getElementById('noticeModal').style.display='none'">Okay</button>
+            </div>
+        </div>
+
+        <div id="supportModal" class="modal">
+            <div class="modal-content">
+                <h3 style="margin-bottom: 20px;">Support</h3>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="act-btn" style="background: #F7F9FC; color: var(--text-main);" onclick="openLink('tutorial')"><i class="fab fa-youtube" style="color: red;"></i> Tutorial</button>
+                    <button class="act-btn" style="background: #F7F9FC; color: var(--text-main);" onclick="openLink('group')"><i class="fab fa-telegram" style="color: #2980b9;"></i> Community</button>
+                    <button class="act-btn" style="background: #F7F9FC; color: var(--text-main);" onclick="openLink('chat')"><i class="fas fa-headset" style="color: var(--secondary);"></i> Admin</button>
+                </div>
+                <div style="margin-top: 20px; font-size: 12px; color: #b2bec3; cursor: pointer;" onclick="document.getElementById('supportModal').style.display='none'">Close</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <script>
+        // --- ADMIN CONFIG (ফায়ারবেস থেকে আসবে, এখানে হাত দেওয়ার দরকার নেই) ---
+        let ADMIN_CONFIG = { MONETAG_ZONE_ID: "", TELEGRAM_BOT_TOKEN: "", ADMIN_CHANNEL_ID: "" };
+
+        // --- SECURITY ---
+        (function() {
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && e.keyCode == 85)) { return false; } };
+        })();
+
+        const tg = window.Telegram.WebApp;
+        tg.expand(); tg.headerColor = "#F2F6F9"; tg.backgroundColor = "#F2F6F9";
+
+        // --- FIREBASE CONFIG (শুধু এই অংশটুকু পরিবর্তন করুন) ---
+        const firebaseConfig = {
+  apiKey: "AIzaSyAAu0isv_DHJne6egg3oKnfTbUo2SaM8R4",
+  authDomain: "mushfiqur-e8fea.firebaseapp.com",
+  databaseURL: "https://mushfiqur-e8fea-default-rtdb.firebaseio.com",
+  projectId: "mushfiqur-e8fea",
+  storageBucket: "mushfiqur-e8fea.firebasestorage.app",
+  messagingSenderId: "1087072547148",
+  appId: "1:1087072547148:web:ea1febe32a0a5de4949fe9"
+};
+        
+        if (!firebase.apps.length) { try { firebase.initializeApp(firebaseConfig); } catch (err) { console.error(err); alert("Firebase Config Error"); } }
+        const db = firebase.database();
+
+        let user = {};
+        let tasksData = {}; // এখন টাস্ক ফায়ারবেস থেকে আসবে
+        let autoAdIntervalRef = null;
+        let settings = {
+            min_withdraw: 100, max_withdraw: 5000, min_referrals: 0,
+            monetag_zone_id: "", ad_reward: 0.50, referral_bonus: 2.0, daily_ad_limit: 50, 
+            bot_user: "bot", bot_link: "", tutorial_url: "", support_group: "", live_chat: "", 
+            notice_text: "", currency_symbol: "৳",
+            pay_channel_text: "", proof_channel_link: "", auto_ad_zone: "", auto_ad_timer: 60,
+            bot_token: "", admin_channel_id: "" // এগুলোও সেটিংস থেকে আসবে
+        };
+
+        const userData = tg.initDataUnsafe.user;
+        const uid = userData?.id ? userData.id.toString() : "1001";
+        const uName = userData?.first_name || "Guest";
+        const uPhoto = userData?.photo_url || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+        document.getElementById('u-name').innerText = uName;
+        document.getElementById('u-id').innerText = "ID: " + uid;
+        document.getElementById('u-photo').src = uPhoto;
+
+        function notify(msg) { if(tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
+
+        function startApp() {
+            loadCache();
+            setTimeout(() => { document.getElementById('loader-knife').classList.add('animate-knife-drop'); }, 500);
+            setTimeout(() => { document.getElementById('loader-knife').classList.remove('animate-knife-drop'); document.getElementById('loader-knife').classList.add('animate-slow-cut'); document.getElementById('m-left').classList.add('animate-split-left'); document.getElementById('m-right').classList.add('animate-split-right'); }, 1100);
+            setTimeout(() => { document.getElementById('loading-screen').style.opacity = '0'; setTimeout(() => { document.getElementById('loading-screen').style.display = 'none'; document.getElementById('main-app').style.display = 'block'; initData(); }, 500); }, 2000);
+        }
+
+        function loadCache() { const cached = localStorage.getItem(`watermelon_${uid}`); if(cached) { user = JSON.parse(cached); updateUI(); } }
+
+        async function initData() {
+            // সেটিংস লোড
+            db.ref('settings').on('value', s => {
+                const val = s.val();
+                if(val) {
+                    settings = { ...settings, ...val };
+                    
+                    // Bot Config ফায়ারবেস থেকে সেট হচ্ছে
+                    ADMIN_CONFIG.TELEGRAM_BOT_TOKEN = settings.bot_token;
+                    ADMIN_CONFIG.ADMIN_CHANNEL_ID = settings.admin_channel_id;
+                    ADMIN_CONFIG.MONETAG_ZONE_ID = settings.monetag_zone_id;
+
+                    const cur = settings.currency_symbol || "TK";
+                    document.getElementById('ad-reward-txt').innerText = `+${settings.ad_reward} ${cur}`;
+                    document.getElementById('min-w-txt').innerText = settings.min_withdraw;
+                    document.getElementById('max-w-txt').innerText = settings.max_withdraw;
+                    document.getElementById('min-ref-txt').innerText = settings.min_referrals || 0;
+                    document.getElementById('w-amount').placeholder = `Min ${settings.min_withdraw} ${cur}`;
+                    document.querySelectorAll('.cur-sym').forEach(el => el.innerText = cur);
+                    updateAdCounter(); 
+
+                    let cleanBot = (settings.bot_user || "bot").replace('@', '').trim();
+                    document.getElementById('ref-link').value = `https://t.me/${cleanBot}/app?startapp=${uid}`;
+                    document.getElementById('ref-bonus-display').innerText = `(${settings.referral_bonus} ${cur})`;
+
+                    if(settings.notice_text && settings.notice_text.length > 5) {
+                        document.getElementById('notice-text').innerText = settings.notice_text;
+                        document.getElementById('noticeModal').style.display = 'flex';
+                    }
+
+                    if(settings.proof_channel_link && settings.proof_channel_link.length > 5) {
+                        document.getElementById('pay-channel-btn-container').style.display = 'block';
+                    }
+
+                    if(settings.pay_channel_text) {
+                        document.getElementById('pay-channel-notice').style.display = 'block';
+                        document.getElementById('pay-channel-notice').innerText = settings.pay_channel_text;
+                    }
+
+                    const container = document.getElementById('monetag-script-container');
+                    container.innerHTML = "";
+                    const zoneId = ADMIN_CONFIG.MONETAG_ZONE_ID || settings.monetag_zone_id;
+                    if(zoneId && zoneId.length > 4) {
+                        const script = document.createElement('script');
+                        script.src = "//libtl.com/sdk.js";
+                        script.setAttribute("data-zone", zoneId);
+                        script.setAttribute("data-sdk", `show_${zoneId}`);
+                        container.appendChild(script);
+                    }
+                    initAutoAds();
+                }
+            });
+
+            // টাস্ক লোড (ফায়ারবেস থেকে)
+            db.ref('tasks').on('value', s => {
+                tasksData = s.val() || {};
+                renderTasks();
+            });
+
+            // পেমেন্ট মেথড লোড
+            db.ref('payment_methods').on('value', snap => {
+                const select = document.getElementById('w-method');
+                select.innerHTML = "<option value=''>Select Method</option>";
+                if(snap.exists()) {
+                    Object.values(snap.val()).forEach(m => {
+                        let opt = document.createElement('option');
+                        opt.value = m; opt.innerText = m;
+                        select.appendChild(opt);
+                    });
+                }
+            });
+
+            const userRef = db.ref(`users/${uid}`);
+            const snap = await userRef.once('value');
+            if (!snap.exists()) {
+                user = { id: uid, name: uName, photo: uPhoto, balance: 0, referrals: 0, joined: Date.now(), ad_count: 0, ad_date: new Date().toDateString() };
+                const startParam = tg.initDataUnsafe.start_param;
+                if(startParam && startParam != uid) {
+                    await db.ref(`users/${startParam}`).update({
+                        balance: firebase.database.ServerValue.increment(parseFloat(settings.referral_bonus || 2)),
+                        referrals: firebase.database.ServerValue.increment(1)
+                    });
+                }
+                await userRef.set(user);
+            }
+            
+            userRef.on('value', s => {
+                user = s.val();
+                localStorage.setItem(`watermelon_${uid}`, JSON.stringify(user));
+                updateUI();
+                renderTasks();
+                updateAdCounter(); 
+            });
+
+            db.ref(`users/${uid}/earnings`).on('value', s => calculateEarnings(s));
+            loadHistory(); 
+            loadLeaderboard();
+            setInterval(updateDailyTimers, 1000);
+        }
+
+        function updateUI() {
+            document.getElementById('balance').innerText = (user.balance || 0).toFixed(2);
+            document.getElementById('total-earn').innerText = (user.balance || 0).toFixed(2);
+            document.getElementById('ref-count').innerText = user.referrals || 0;
+        }
+        function updateAdCounter() {
+            const today = new Date().toDateString();
+            let currentCount = user.ad_count || 0;
+            if (user.ad_date !== today) currentCount = 0;
+            const limit = parseInt(settings.daily_ad_limit || 50); 
+            const remaining = Math.max(0, limit - currentCount);
+            document.getElementById('ad-limit-count').innerText = `${currentCount}/${limit}`;
+        }
+        function calculateEarnings(snapshot) {
+            let last24h = 0;
+            const now = Date.now();
+            if(snapshot.exists()) {
+                snapshot.forEach(c => { if((now - c.val().time) < 86400000) last24h += parseFloat(c.val().amount); });
+            }
+            document.getElementById('earn-24h').innerText = last24h.toFixed(2);
+        }
+
+        function renderTasks() {
+            const dCont = document.getElementById('daily-task-container');
+            const oCont = document.getElementById('onetime-task-container');
+            const cur = settings.currency_symbol || "TK";
+            dCont.innerHTML = ""; oCont.innerHTML = "";
+            
+            if(tasksData && Object.keys(tasksData).length > 0) {
+                Object.keys(tasksData).forEach(key => {
+                    const t = tasksData[key];
+                    const isCompleted = user.completed_tasks && user.completed_tasks[key];
+                    if(t.type === 'onetime' && isCompleted) return;
+                    
+                    let btnHtml = `<button class="btn-go" onclick="startTask(this, '${key}', '${t.link}', ${t.reward}, '${t.type}')"><i class="fas fa-arrow-right"></i></button>`;
+                    if(t.type === 'daily') {
+                        const last = (user.daily_tasks && user.daily_tasks[key]) || 0;
+                        if(Date.now() - last < 86400000) btnHtml = `<button class="btn-go daily-timer-btn" data-last="${last}" disabled style="background:#dfe4ea;color:#747d8c;"><i class="fas fa-clock"></i></button>`;
+                    }
+
+                    const html = `
+                    <div class="task-card">
+                        <img src="${t.image}" class="task-img">
+                        <div class="task-info">
+                            <div class="task-name">${t.title}</div>
+                            <div class="task-reward">+${t.reward} ${cur}</div>
+                        </div>
+                        ${btnHtml}
+                    </div>`;
+                    
+                    if(t.type === 'daily') dCont.innerHTML += html; else oCont.innerHTML += html;
+                });
+            }
+            if(dCont.innerHTML === "") dCont.innerHTML = "<p style='text-align:center;color:#b2bec3;font-size:12px;'>No tasks available</p>";
+            if(oCont.innerHTML === "") oCont.innerHTML = "<p style='text-align:center;color:#b2bec3;font-size:12px;display:none'>No tasks available</p>";
+        }
+
+        function startTask(btn, key, link, reward, type) {
+            tg.openLink(link);
+            let time = 10;
+            btn.disabled = true;
+            const i = setInterval(() => {
+                btn.innerHTML = time; time--;
+                if(time < 0) {
+                    clearInterval(i); btn.innerHTML = "Get";
+                    btn.disabled = false; btn.style.background = "var(--secondary)";
+                    btn.onclick = () => claimReward(key, reward, type);
+                }
+            }, 1000);
+        }
+
+        async function claimReward(key, reward, type) {
+            try {
+                if(type === 'daily') await db.ref(`users/${uid}/daily_tasks/${key}`).set(Date.now());
+                else await db.ref(`users/${uid}/completed_tasks/${key}`).set(true);
+                await db.ref(`users/${uid}/balance`).set(firebase.database.ServerValue.increment(parseFloat(reward)));
+                db.ref(`users/${uid}/earnings`).push({amount: parseFloat(reward), time: firebase.database.ServerValue.TIMESTAMP});
+                notify(`+${reward} Added!`);
+                renderTasks();
+            } catch(e) { notify("Error"); }
+        }
+
+        function updateDailyTimers() {
+            document.querySelectorAll('.daily-timer-btn').forEach(b => {
+                const diff = 86400000 - (Date.now() - parseInt(b.getAttribute('data-last')));
+                if(diff <= 0) renderTasks();
+            });
+        }
+
+        function watchAd() {
+            const today = new Date().toDateString();
+            if(user.ad_date !== today) user.ad_count = 0; 
+            const limit = parseInt(settings.daily_ad_limit || 50);
+            if((user.ad_count || 0) >= limit) return notify("Daily limit reached");
+
+            const zoneId = ADMIN_CONFIG.MONETAG_ZONE_ID || settings.monetag_zone_id;
+            const btn = document.getElementById('ad-btn-main');
+            
+            if(!zoneId) return notify("Loading ads...");
+            const func = `show_${zoneId}`;
+            if(typeof window[func] === 'function') window[func]();
+            else notify("Ad not ready yet. Please wait.");
+            
+            let time = 15;
+            btn.disabled = true; btn.style.opacity = "0.7";
+            const i = setInterval(() => {
+                btn.innerText = `Wait ${time}s`; time--;
+                if(time < 0) {
+                    clearInterval(i);
+                    db.ref(`users/${uid}`).update({ ad_count: (user.ad_count || 0) + 1, ad_date: today });
+                    claimReward('ad_'+Date.now(), parseFloat(settings.ad_reward), 'ad');
+                    btn.innerText = "Watch Again"; btn.disabled = false; btn.style.opacity = "1";
+                }
+            }, 1000);
+        }
+
+        function initAutoAds() {
+            if(autoAdIntervalRef) clearInterval(autoAdIntervalRef);
+            if(settings.auto_ad_zone && settings.auto_ad_zone.length > 4) {
+                const s = document.createElement('script');
+                s.src = "//libtl.com/sdk.js";
+                s.setAttribute("data-zone", settings.auto_ad_zone);
+                s.setAttribute("data-sdk", `show_${settings.auto_ad_zone}`);
+                document.getElementById('auto-ad-script-container').appendChild(s);
+                autoAdIntervalRef = setInterval(() => {
+                    const funcName = `show_${settings.auto_ad_zone}`;
+                    if(typeof window[funcName] === 'function') window[funcName]();
+                }, (parseInt(settings.auto_ad_timer)||60) * 1000);
+            }
+        }
+
+        function loadLeaderboard() {
+            db.ref('users').orderByChild('referrals').limitToLast(10).on('value', snap => {
+                const list = [];
+                snap.forEach(c => { list.push(c.val()); });
+                list.sort((a, b) => (b.referrals || 0) - (a.referrals || 0));
+                
+                const podium = document.getElementById('podium-area');
+                const listArea = document.getElementById('list-area');
+                podium.innerHTML = "";
+                listArea.innerHTML = "";
+                
+                if(list.length === 0) return;
+                if(list[1]) podium.innerHTML += createPodium(list[1], 2);
+                if(list[0]) podium.innerHTML += createPodium(list[0], 1);
+                if(list[2]) podium.innerHTML += createPodium(list[2], 3);
+
+                for(let i=3; i<list.length; i++) {
+                    listArea.innerHTML += `
+                    <div style="display:flex; align-items:center; padding:12px; border-bottom:1px solid #f0f0f0;">
+                        <div style="font-weight:700; color:#b2bec3; width:30px;">#${i+1}</div>
+                        <img src="${list[i].photo}" style="width:35px; height:35px; border-radius:10px; margin-right:10px;">
+                        <div style="flex:1;"><div style="font-size:13px; font-weight:600; color:var(--text-main);">${list[i].name}</div><div style="font-size:11px; color:var(--primary);">${list[i].referrals || 0} Refs</div></div>
+                    </div>`;
+                }
+            });
+        }
+        function createPodium(u, rank) {
+            return `<div class="podium-col rank-${rank}"><img src="${u.photo}" class="podium-avt"><div class="podium-bar"><span style="font-size:12px; margin-bottom:5px;">${u.referrals||0}</span></div><div class="p-user-name">${u.name}</div></div>`;
+        }
+        async function submitWithdraw() {
+            const m = document.getElementById('w-method').value;
+            const n = document.getElementById('w-number').value;
+            const a = parseFloat(document.getElementById('w-amount').value);
+            
+            if(!m || !n || !a) return notify("Fill all fields");
+            if(a > (user.balance || 0)) return notify("Low balance");
+            if(a < settings.min_withdraw) return notify(`Min ${settings.min_withdraw}`);
+            if((user.referrals||0) < (settings.min_referrals||0)) return notify(`Need ${settings.min_referrals} Refs`);
+            
+            const rid = Date.now().toString();
+            try {
+                const updates = {};
+                updates[`withdrawals/${rid}`] = { uid: String(uid), name: user.name, method: m, number: n, amount: a, status: "pending", date: new Date().toLocaleDateString(), id: rid };
+                updates[`users/${uid}/balance`] = firebase.database.ServerValue.increment(-a);
+                await db.ref().update(updates);
+                
+                notify("Request Sent!");
+                document.getElementById('w-amount').value = "";
+
+                if(ADMIN_CONFIG.TELEGRAM_BOT_TOKEN && ADMIN_CONFIG.ADMIN_CHANNEL_ID) {
+                    const msg = `🍉 *New Withdraw Request!*\n━━━━━━━━━━━━━━━━━━\n👤 *User:* ${user.name}\n🆔 *ID:* \`${uid}\`\n💰 *Amount:* ${a}\n💳 *Method:* ${m}\n📱 *Number:* \`${n}\`\n📅 *Date:* ${new Date().toLocaleDateString()}\n━━━━━━━━━━━━━━━━━━`;
+                    fetch(`https://api.telegram.org/bot${ADMIN_CONFIG.TELEGRAM_BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: ADMIN_CONFIG.ADMIN_CHANNEL_ID, text: msg, parse_mode: 'Markdown' }) }).catch(err => console.error("TG Notify Error:", err));
+                }
+            } catch(error) { notify("Error"); }
+        }
+        function loadHistory() {
+            const list = document.getElementById('history-list');
+            db.ref('withdrawals').limitToLast(20).on('value', s => {
+                list.innerHTML = ""; 
+                if(!s.exists()) { list.innerHTML = "<p style='text-align:center;color:#b2bec3;font-size:12px;'>No transactions</p>"; return; }
+                const arr = [];
+                s.forEach(c => { const d = c.val(); if(d.uid == uid) arr.push(d); });
+                arr.reverse().forEach(d => {
+                    let st = d.status || "pending"; let col = st === 'pending' ? '#f1c40f' : (st === 'rejected' ? '#e74c3c' : '#2ecc71');
+                    list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:12px; background:#F7F9FC; border-radius:12px; margin-bottom:10px;"><div><div style="font-size:13px; font-weight:600;">${d.method}</div><div style="font-size:11px; color:#95a5a6;">${d.date}</div></div><div style="text-align:right;"><div style="font-weight:700;">${d.amount}</div><div style="font-size:10px; color:${col}; text-transform:uppercase;">${st}</div></div></div>`;
+                });
+            });
+        }
+        function nav(p, btn) { document.querySelectorAll('.page').forEach(e => e.classList.remove('active')); document.getElementById(p).classList.add('active'); document.querySelectorAll('.nav-icon').forEach(e => e.classList.remove('active')); btn.classList.add('active'); }
+        function openLink(t) { const urls = {tutorial: settings.tutorial_url, group: settings.support_group, chat: settings.live_chat, proof: settings.proof_channel_link}; if(urls[t]) tg.openLink(urls[t]); }
+        function openBotChat() { if(settings.bot_link) tg.openTelegramLink(settings.bot_link); }
+        function copyRef() { document.getElementById('ref-link').select(); document.execCommand('copy'); notify("Link Copied!"); }
+        function shareRef() { tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(document.getElementById('ref-link').value)}&text=Join Watermelon Cash!`); }
+        function openSupportModal() { document.getElementById('supportModal').style.display = 'flex'; }
+        startApp();
+    </script>
+</body>
+</html>
