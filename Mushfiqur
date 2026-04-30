@@ -367,13 +367,13 @@
 
         // --- FIREBASE CONFIG (শুধু এই অংশটুকু পরিবর্তন করুন) ---
         const firebaseConfig = {
-  apiKey: "AIzaSyAvKktsw5ztRooOJ0aDqeX7M2Qj4zDu_7o",
-  authDomain: "ddddd-60c7c.firebaseapp.com",
-  databaseURL: "https://ddddd-60c7c-default-rtdb.firebaseio.com",
-  projectId: "ddddd-60c7c",
-  storageBucket: "ddddd-60c7c.firebasestorage.app",
-  messagingSenderId: "306221145244",
-  appId: "1:306221145244:web:42cfdc7f3b3c2fca156159"
+  apiKey: "AIzaSyAAu0isv_DHJne6egg3oKnfTbUo2SaM8R4",
+  authDomain: "mushfiqur-e8fea.firebaseapp.com",
+  databaseURL: "https://mushfiqur-e8fea-default-rtdb.firebaseio.com",
+  projectId: "mushfiqur-e8fea",
+  storageBucket: "mushfiqur-e8fea.firebasestorage.app",
+  messagingSenderId: "1087072547148",
+  appId: "1:1087072547148:web:ea1febe32a0a5de4949fe9"
 };
         
         if (!firebase.apps.length) { try { firebase.initializeApp(firebaseConfig); } catch (err) { console.error(err); alert("Firebase Config Error"); } }
